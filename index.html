@@ -193,6 +193,11 @@ body{font-family:system-ui,-apple-system,sans-serif;color:#1a1a1a;background:#f9
     </div>
     <div class="q-stack">
       <div class="fg"><label>Who specifically will you address?</label><input id="aud-who" placeholder="e.g. Senator Debbie Stabenow, the Dexter School Board…" /></div>
+      <div class="fg">
+        <label>Their contact information</label>
+        <div style="font-size:12px;color:#999;font-style:italic;margin-bottom:4px">Use the links above to find their email address, mailing address, or contact form URL — then paste it here so you have it ready when you write your piece.</div>
+        <textarea id="aud-contact" placeholder="e.g. 269 Russell Senate Office Building, Washington, DC 20510&#10;stabenow.senate.gov/contact&#10;or&#10;dexterschools.org/contact-us" style="min-height:80px"></textarea>
+      </div>
       <div class="fg"><label>Why are they the right audience — and not someone else?</label><textarea id="aud-why"></textarea></div>
       <div class="fg"><label>What does this audience care about most?</label><textarea id="aud-cares"></textarea></div>
     </div>
@@ -228,6 +233,23 @@ body{font-family:system-ui,-apple-system,sans-serif;color:#1a1a1a;background:#f9
       <div class="fmt-card" data-fmt="speech" onclick="selectFmt(this)"><h4>Speech or presentation</h4><p>A spoken argument delivered to a real or simulated audience — a board meeting, community event, or class.</p></div>
       <div class="fmt-card" data-fmt="budget-proposal" onclick="selectFmt(this)"><h4>Budget or funding proposal</h4><p>A request for specific funding or resources, showing how money would be spent and what outcomes it would produce.</p></div>
       <div class="fmt-card" data-fmt="resolution" onclick="selectFmt(this)"><h4>Resolution or ordinance draft</h4><p>An attempt to write the actual language of a law, rule, or official resolution the way a governing body would adopt it.</p></div>
+    </div>
+    <div class="fmt-section-label">Creative formats</div>
+    <div class="format-grid">
+      <div class="fmt-card" data-fmt="brochure" onclick="selectFmt(this)"><h4>Brochure or infographic</h4><p>A visual, shareable piece that breaks down the issue and your solution clearly — great for reaching a broad audience quickly.</p></div>
+      <div class="fmt-card" data-fmt="podcast" onclick="selectFmt(this)"><h4>Podcast script or episode plan</h4><p>A scripted or outlined audio piece that makes the case for your position — good for storytellers and conversational thinkers.</p></div>
+      <div class="fmt-card" data-fmt="debate-brief" onclick="selectFmt(this)"><h4>Debate brief</h4><p>A structured pro/con case laying out the strongest arguments on both sides — ideal for issues with two clearly defined positions.</p></div>
+    </div>
+    <div class="fmt-section-label">Something else?</div>
+    <div class="format-grid">
+      <div class="fmt-card" data-fmt="other" onclick="selectFmt(this)" id="fmt-other-card"><h4>Other</h4><p>Have a different idea? Describe your format below.</p></div>
+    </div>
+    <div id="fmt-other-box" style="display:none;margin-top:8px">
+      <div class="fg">
+        <label>Describe your format</label>
+        <div style="font-size:12px;color:#999;font-style:italic;margin-bottom:4px">What is it? Who will see or hear it? Why does it fit your topic and audience?</div>
+        <textarea id="fmt-other-text" placeholder="e.g. A short documentary-style video script that follows a student affected by this policy and ends with a call to action addressed to the school board…" style="min-height:80px"></textarea>
+      </div>
     </div>
     <div style="height:1.25rem"></div>
     <div class="q-stack">
@@ -280,7 +302,7 @@ function selectAud(el){
   if(data){lbl.textContent=data.label;row.innerHTML=data.links.map(l=>`<a href="${l.url}" target="_blank">${l.text} ↗</a>`).join('');box.classList.add('visible');}
   else box.classList.remove('visible');
 }
-function selectFmt(el){document.querySelectorAll('.fmt-card').forEach(f=>f.classList.remove('selected'));el.classList.add('selected');selectedFmt=el.dataset.fmt;}
+function selectFmt(el){document.querySelectorAll('.fmt-card').forEach(f=>f.classList.remove('selected'));el.classList.add('selected');selectedFmt=el.dataset.fmt;document.getElementById('fmt-other-box').style.display=selectedFmt==='other'?'block':'none';}
 function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 function addSolution(){
   solutionCount++;
@@ -309,7 +331,7 @@ function buildChecklist(){
   document.getElementById('checklist').innerHTML=checks.map(c=>`<div class="check-item ${c.ok?'ok':''}"><span class="icon">${c.ok?'✓':'○'}</span><span>${c.label}</span></div>`).join('');
 }
 function audLabel(a){return{national:'National / Federal',state:'State / Local',school:'School / Community'}[a]||a;}
-function fmtLabel(f){return{'letter-rep':'Letter to elected official','public-comment':'Public comment','letter-board':'Letter to school board','ops-proposal':'School operations proposal','lesson-proposal':'Unit or lesson proposal','student-petition':'Student petition','oped':'Op-ed / editorial','psa':'Public service announcement','social-campaign':'Social media campaign plan','community-forum':'Community forum proposal','proposal':'Policy proposal / memo','speech':'Speech or presentation','budget-proposal':'Budget or funding proposal','resolution':'Resolution or ordinance draft'}[f]||f;}
+function fmtLabel(f){if(f==='other'){const t=val('fmt-other-text');return t?'Other: '+t:'Other (see description)'}return{'letter-rep':'Letter to elected official','public-comment':'Public comment','letter-board':'Letter to school board','ops-proposal':'School operations proposal','lesson-proposal':'Unit or lesson proposal','student-petition':'Student petition','oped':'Op-ed / editorial','psa':'Public service announcement','social-campaign':'Social media campaign plan','community-forum':'Community forum proposal','proposal':'Policy proposal / memo','speech':'Speech or presentation','budget-proposal':'Budget or funding proposal','resolution':'Resolution or ordinance draft','brochure':'Brochure or infographic','podcast':'Podcast script or episode plan','debate-brief':'Debate brief'}[f]||f;}
 function exportPDF(){
   const name=val('f-name')||'___',topic=val('f-topic')||'___',fq=val('final-q')||'—';
   const scaffolds=[
@@ -329,7 +351,7 @@ function exportPDF(){
 <div class="meta"><strong>Name:</strong> ${name} &nbsp;&nbsp; <strong>Topic:</strong> ${topic}</div>
 <h2>Step 1 — Research question</h2>${scaffoldHtml}<div class="final-q">Overall research question: ${fq}</div>
 <h2>Step 2 — Potential solutions</h2>${solHtml||'<p>No solutions recorded.</p>'}
-<h2>Step 3 — Audience</h2><div style="background:#eef4fb;border-radius:6px;padding:10px 14px;margin-bottom:4px"><div class="info-row"><strong>Level:</strong> ${audLabel(selectedAud)||'—'}</div><div class="info-row"><strong>Specific audience:</strong> ${val('aud-who')||'—'}</div><div class="info-row"><strong>Why this audience:</strong> ${val('aud-why')||'—'}</div><div class="info-row"><strong>What they care about:</strong> ${val('aud-cares')||'—'}</div></div>
+<h2>Step 3 — Audience</h2><div style="background:#eef4fb;border-radius:6px;padding:10px 14px;margin-bottom:4px"><div class="info-row"><strong>Level:</strong> ${audLabel(selectedAud)||'—'}</div><div class="info-row"><strong>Specific audience:</strong> ${val('aud-who')||'—'}</div><div class="info-row"><strong>Contact information:</strong> ${val('aud-contact')||'—'}</div><div class="info-row"><strong>Why this audience:</strong> ${val('aud-why')||'—'}</div><div class="info-row"><strong>What they care about:</strong> ${val('aud-cares')||'—'}</div></div>
 <h2>Step 4 — Format</h2><div style="background:#eef4fb;border-radius:6px;padding:10px 14px"><div class="fmt-badge">${fmtLabel(selectedFmt)||'—'}</div><div class="info-row"><strong>Why this format:</strong> ${val('fmt-why')||'—'}</div><div class="info-row"><strong>What I want my audience to do/think/feel:</strong> ${val('fmt-goal')||'—'}</div></div>
 </body></html>`;
   const w=window.open('','_blank');w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),400);

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Policy Research Project — E9/AH9</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;color:#1a1a1a;background:#f9f9f7;min-height:100vh;padding:1.5rem 1rem 3rem}
+.app{max-width:680px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #e0e0d8;overflow:hidden}
+.header{padding:1.25rem 1.5rem 0}
+.header h1{font-size:18px;font-weight:500;margin-bottom:2px;color:#1a1a1a}
+.header p{font-size:13px;color:#666}
+.name-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:1rem 1.5rem 0}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:12px;color:#666;font-weight:500;letter-spacing:0.03em}
+.fg input,.fg textarea{border:1px solid #d0d0c8;border-radius:8px;padding:7px 10px;font-size:14px;background:#fff;color:#1a1a1a;width:100%;resize:vertical;font-family:inherit}
+.fg input:focus,.fg textarea:focus{outline:none;border-color:#378add}
+.fg textarea{min-height:64px;line-height:1.5}
+.progress{height:3px;background:#e8e8e4;margin-top:1rem}
+.progress-fill{height:100%;background:#1a1a1a;transition:width 0.3s}
+.tabs{display:flex;padding:0 1.5rem;border-bottom:1px solid #e8e8e4;overflow-x:auto;gap:0}
+.tab{flex-shrink:0;padding:10px 14px;font-size:13px;border:none;background:none;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color 0.15s;white-space:nowrap;font-family:inherit}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:500}
+.tab:hover{color:#1a1a1a}
+.panel{display:none;padding:1.25rem 1.5rem}
+.panel.active{display:block}
+.step-title{font-size:16px;font-weight:500;margin-bottom:4px}
+.step-desc{font-size:13px;color:#666;margin-bottom:1.25rem;line-height:1.6}
+.sl{font-size:11px;font-weight:500;color:#888;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;margin-top:1.25rem}
+.sl:first-of-type{margin-top:0}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e8e8e4}
+.nav-row button{padding:7px 18px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #d0d0c8;background:#fff;color:#1a1a1a;font-family:inherit}
+.nav-row button:hover{background:#f5f5f2}
+.nav-row .bp{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.nav-row .bp:hover{background:#333;opacity:1}
+.eg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.eg-card{border-radius:8px;padding:10px 12px}
+.eg-card.bad{background:#fef2f2;border:1px solid #fca5a5}
+.eg-card.good{background:#f0fdf4;border:1px solid #86efac}
+.eg-card .badge{font-size:11px;font-weight:500;letter-spacing:0.04em;margin-bottom:6px}
+.eg-card.bad .badge{color:#dc2626}
+.eg-card.good .badge{color:#16a34a}
+.eg-card p{font-size:13px;line-height:1.5;margin-bottom:5px}
+.eg-card p:last-child{margin-bottom:0}
+.eg-card .why{font-size:12px;font-style:italic;color:#888;margin-bottom:8px}
+.eg-card.bad p:not(.why){color:#dc2626}
+.eg-card.good p:not(.why){color:#16a34a}
+.scaffold-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:1.5rem}
+.scaffold-q{border:1px solid #e0e0d8;border-radius:8px;overflow:hidden}
+.scaffold-q .sq-label{background:#f5f5f2;padding:7px 12px;font-size:12px;font-weight:500;color:#555;border-bottom:1px solid #e0e0d8}
+.scaffold-q .sq-prompt{padding:7px 12px 3px;font-size:12px;color:#999;font-style:italic}
+.scaffold-q textarea{border:none;border-top:1px solid #e0e0d8;border-radius:0;padding:8px 12px;font-size:14px;background:#fff;color:#1a1a1a;width:100%;resize:vertical;min-height:56px;font-family:inherit}
+.scaffold-q textarea:focus{outline:none;background:#fafaf8}
+.divider-arrow{text-align:center;padding:6px 0;font-size:13px;color:#bbb}
+.final-box{border:2px solid #378add;border-radius:12px;padding:1rem;background:#eef6ff}
+.final-box label{font-size:12px;font-weight:500;color:#1a5fa8;letter-spacing:0.04em;display:block;margin-bottom:4px}
+.final-box .hint{font-size:12px;color:#378add;margin-bottom:8px;font-style:italic}
+.final-box textarea{border:1px solid #93c5fd;border-radius:8px;padding:8px 10px;font-size:14px;background:#fff;color:#1a1a1a;width:100%;resize:vertical;min-height:80px;font-family:inherit}
+.final-box textarea:focus{outline:none;border-color:#378add}
+.solution-card{border:1px solid #e0e0d8;border-radius:12px;padding:1rem;margin-bottom:12px}
+.solution-card .sc-num{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.ai-box{background:#eef6ff;border-radius:8px;padding:0.875rem 1rem;margin-bottom:1.25rem;border:1px solid #bfdbfe}
+.ai-box p{font-size:13px;color:#1d4ed8;line-height:1.6}
+.audience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.aud-card{border:1px solid #e0e0d8;border-radius:8px;padding:10px 12px;cursor:pointer;transition:all 0.15s}
+.aud-card:hover{border-color:#93c5fd;background:#f0f7ff}
+.aud-card.selected{border-color:#378add;background:#eef6ff}
+.aud-card h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.aud-card ul{list-style:none;padding:0}
+.aud-card ul li{font-size:12px;color:#888;padding:1px 0}
+.aud-card ul li::before{content:"· "}
+.aud-card.selected h4{color:#1a5fa8}
+.rep-links{display:none;background:#f5f5f2;border:1px solid #e0e0d8;border-radius:8px;padding:10px 14px;margin-bottom:1.25rem}
+.rep-links.visible{display:block}
+.rep-links p{font-size:13px;color:#555;margin-bottom:8px;font-weight:500}
+.rep-links .link-row{display:flex;flex-wrap:wrap;gap:8px}
+.rep-links a{font-size:13px;color:#1a5fa8;text-decoration:none;border:1px solid #93c5fd;border-radius:8px;padding:5px 10px;background:#eef6ff;white-space:nowrap}
+.rep-links a:hover{background:#dbeafe}
+.fmt-section-label{font-size:11px;font-weight:500;color:#aaa;letter-spacing:0.06em;text-transform:uppercase;padding:4px 0 6px;margin-top:14px;border-bottom:1px solid #e8e8e4;margin-bottom:8px}
+.fmt-section-label:first-of-type{margin-top:0}
+.format-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.fmt-card{border:1px solid #e0e0d8;border-radius:8px;padding:10px 12px;cursor:pointer;transition:all 0.15s}
+.fmt-card:hover{background:#f5f5f2;border-color:#bbb}
+.fmt-card.selected{border-color:#378add;background:#eef6ff}
+.fmt-card h4{font-size:13px;font-weight:500;margin-bottom:3px}
+.fmt-card p{font-size:12px;color:#888;line-height:1.4}
+.fmt-card.selected h4{color:#1a5fa8}
+.fmt-card.selected p{color:#378add}
+.checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem}
+.check-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#888}
+.check-item.ok{color:#16a34a}
+.check-item .icon{flex-shrink:0;width:16px;font-size:14px}
+.export-btn{width:100%;padding:11px;background:#1a1a1a;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;margin-top:0.5rem;font-family:inherit}
+.export-btn:hover{background:#333}
+.q-stack{display:flex;flex-direction:column;gap:12px}
+@media(max-width:500px){
+  .eg-grid,.format-grid,.sc-grid{grid-template-columns:1fr}
+  .audience-grid{grid-template-columns:1fr}
+  .name-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Policy research project</h1>
+    <p>E9 / AH9 — fill in each step, then export your PDF</p>
+  </div>
+  <div class="name-row">
+    <div class="fg"><label>Your name</label><input id="f-name" placeholder="First Last" /></div>
+    <div class="fg"><label>Policy topic</label><input id="f-topic" placeholder="e.g. school lunch policy" /></div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="prog" style="width:20%"></div></div>
+  <div class="tabs">
+    <button class="tab active" data-tab="0">1. Question</button>
+    <button class="tab" data-tab="1">2. Solutions</button>
+    <button class="tab" data-tab="2">3. Audience</button>
+    <button class="tab" data-tab="3">4. Format</button>
+    <button class="tab" data-tab="4">5. Review</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <div class="panel active" id="panel-0">
+    <p class="step-title">Build your research question</p>
+    <p class="step-desc">Answer the six questions below — they'll give you everything you need. Then use what you wrote to craft your overall research question at the bottom.</p>
+    <div class="sl">What does a weak vs. strong question look like?</div>
+    <div class="eg-grid">
+      <div class="eg-card bad">
+        <div class="badge">Too broad — avoid these</div>
+        <p>"What is immigration policy?"</p><p class="why">Just asks what something is — no debate, no action.</p>
+        <p>"Should schools be better?"</p><p class="why">Too vague — "better" could mean anything.</p>
+        <p>"Is climate change a problem?"</p><p class="why">Already settled — not a real policy debate.</p>
+      </div>
+      <div class="eg-card good">
+        <div class="badge">Focused &amp; debatable — aim for these</div>
+        <p>"What should federal policy be on undocumented students in public schools?"</p><p class="why">Specific group, specific level, debatable.</p>
+        <p>"Should Michigan require mental health days be excused absences?"</p><p class="why">Specific place, specific policy ask.</p>
+        <p>"To what extent should Dexter limit cell phones during the school day?"</p><p class="why">Local, specific, genuinely debatable.</p>
+      </div>
+    </div>
+    <div class="sl">Answer these six questions first</div>
+    <div class="scaffold-grid">
+      <div class="scaffold-q"><div class="sq-label">1. What is the core problem or issue?</div><div class="sq-prompt">In one sentence — what is actually wrong or being debated?</div><textarea id="sc1" placeholder="e.g. Many students don't have access to healthy food during the school day…"></textarea></div>
+      <div class="scaffold-q"><div class="sq-label">2. Who is most affected by this issue?</div><div class="sq-prompt">A specific group of people — not just "everyone."</div><textarea id="sc2" placeholder="e.g. Low-income students in public middle and high schools…"></textarea></div>
+      <div class="scaffold-q"><div class="sq-label">3. What level is this issue happening at?</div><div class="sq-prompt">Local, state, national — or a specific place like your school or city?</div><textarea id="sc3" placeholder="e.g. At the federal level, through the National School Lunch Program…"></textarea></div>
+      <div class="scaffold-q"><div class="sq-label">4. What kind of change do you think is needed?</div><div class="sq-prompt">A new law? A policy change? A program? More funding?</div><textarea id="sc4" placeholder="e.g. A policy requiring free breakfast and lunch for all students…"></textarea></div>
+      <div class="scaffold-q"><div class="sq-label">5. Who has the power to make that change?</div><div class="sq-prompt">Congress? A state legislature? A school board? A mayor?</div><textarea id="sc5" placeholder="e.g. Congress, through the USDA and school lunch legislation…"></textarea></div>
+      <div class="scaffold-q"><div class="sq-label">6. What is the strongest argument against your view?</div><div class="sq-prompt">If your question is truly debatable, you should be able to answer this.</div><textarea id="sc6" placeholder="e.g. Critics argue it's too expensive and should be a local decision…"></textarea></div>
+    </div>
+    <div class="divider-arrow">↓ Now use your answers above to write your question ↓</div>
+    <div class="final-box" style="margin-top:10px">
+      <label>My overall research question</label>
+      <div class="hint">Start with "What should…", "How should…", or "To what extent should…" — make sure it's specific enough that someone could disagree.</div>
+      <textarea id="final-q" placeholder="e.g. What should the federal government's policy be on providing free school meals to all public school students?"></textarea>
+    </div>
+    <div class="nav-row"><div></div><button class="bp" onclick="goTab(1)">Next: Solutions →</button></div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div class="panel" id="panel-1">
+    <p class="step-title">Generate potential solutions</p>
+    <p class="step-desc">Think of at least 3 different ways your research question could be answered. Use the AI prompt below to help brainstorm, then fill in each card.</p>
+    <div class="ai-box">
+      <p><strong>Try this AI prompt:</strong> "My research question is: <em>[paste yours]</em>. Give me 8 policy solutions ranging from small local changes to large national ones. For each, explain how it would work and who would carry it out."</p>
+      <p style="margin-top:10px;font-weight:500;color:#1d4ed8;">Open an AI tool to brainstorm:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+        <a href="https://claude.ai" target="_blank" style="font-size:13px;color:#1a5fa8;text-decoration:none;border:1px solid #93c5fd;border-radius:8px;padding:5px 12px;background:#fff;font-family:inherit">Claude ↗</a>
+        <a href="https://chatgpt.com" target="_blank" style="font-size:13px;color:#1a5fa8;text-decoration:none;border:1px solid #93c5fd;border-radius:8px;padding:5px 12px;background:#fff;font-family:inherit">ChatGPT ↗</a>
+        <a href="http://deedee.dexterschools.org" target="_blank" style="font-size:13px;color:#1a5fa8;text-decoration:none;border:1px solid #93c5fd;border-radius:8px;padding:5px 12px;background:#fff;font-family:inherit">DeeDee (Dexter) ↗</a>
+      </div>
+      <p style="margin-top:8px">Read critically — pick what makes sense, add your own ideas. <strong>You decide what's worth keeping.</strong></p>
+    </div>
+    <div id="solutions-container"></div>
+    <button onclick="addSolution()" style="font-size:13px;padding:6px 14px;border-radius:8px;border:1px dashed #ccc;background:none;color:#888;cursor:pointer;margin-top:4px;font-family:inherit">+ Add another solution</button>
+    <div class="nav-row"><button onclick="goTab(0)">← Back</button><button class="bp" onclick="goTab(2)">Next: Audience →</button></div>
+  </div>
+
+  <!-- TAB 3 -->
+  <div class="panel" id="panel-2">
+    <p class="step-title">Identify your audience</p>
+    <p class="step-desc">To make real change, your message needs to reach the right person — someone who actually has the power to act on your solution.</p>
+    <div class="sl">Click the level that fits your issue</div>
+    <div class="audience-grid">
+      <div class="aud-card" data-aud="national" onclick="selectAud(this)"><h4>National / Federal</h4><ul><li>U.S. Senator/Rep</li><li>President or agency</li><li>Supreme Court</li></ul></div>
+      <div class="aud-card" data-aud="state" onclick="selectAud(this)"><h4>State / Local</h4><ul><li>State legislature</li><li>City council</li><li>Mayor</li></ul></div>
+      <div class="aud-card" data-aud="school" onclick="selectAud(this)"><h4>School / Community</h4><ul><li>School board</li><li>Principal</li><li>Local nonprofit</li></ul></div>
+    </div>
+    <div class="rep-links" id="rep-links">
+      <p id="rep-links-label"></p>
+      <div class="link-row" id="rep-link-row"></div>
+    </div>
+    <div class="q-stack">
+      <div class="fg"><label>Who specifically will you address?</label><input id="aud-who" placeholder="e.g. Senator Debbie Stabenow, the Dexter School Board…" /></div>
+      <div class="fg"><label>Why are they the right audience — and not someone else?</label><textarea id="aud-why"></textarea></div>
+      <div class="fg"><label>What does this audience care about most?</label><textarea id="aud-cares"></textarea></div>
+    </div>
+    <div class="nav-row"><button onclick="goTab(1)">← Back</button><button class="bp" onclick="goTab(3)">Next: Format →</button></div>
+  </div>
+
+  <!-- TAB 4 -->
+  <div class="panel" id="panel-3">
+    <p class="step-title">Choose your format</p>
+    <p class="step-desc">The best format depends on your audience and your goal. Pick the one that gives your message the best chance of actually being heard.</p>
+    <div class="fmt-section-label">Reaching elected officials &amp; government</div>
+    <div class="format-grid">
+      <div class="fmt-card" data-fmt="letter-rep" onclick="selectFmt(this)"><h4>Letter to elected official</h4><p>A formal letter to your U.S. rep, state legislator, or mayor with a specific policy ask.</p></div>
+      <div class="fmt-card" data-fmt="public-comment" onclick="selectFmt(this)"><h4>Public comment</h4><p>A short written statement submitted when a government body is seeking input on a proposed rule or policy.</p></div>
+    </div>
+    <div class="fmt-section-label">Changing things at school</div>
+    <div class="format-grid">
+      <div class="fmt-card" data-fmt="letter-board" onclick="selectFmt(this)"><h4>Letter to the school board</h4><p>A persuasive letter asking the board to adopt, change, or eliminate a district-level policy.</p></div>
+      <div class="fmt-card" data-fmt="ops-proposal" onclick="selectFmt(this)"><h4>School operations proposal</h4><p>A formal proposal to change how something works day-to-day — schedules, procedures, facilities, or school culture.</p></div>
+      <div class="fmt-card" data-fmt="lesson-proposal" onclick="selectFmt(this)"><h4>Unit or lesson proposal</h4><p>A pitch to a teacher or curriculum team to add, change, or remove content from a specific course.</p></div>
+      <div class="fmt-card" data-fmt="student-petition" onclick="selectFmt(this)"><h4>Student petition</h4><p>A petition addressed to administration or the board, signed by students, requesting a specific change.</p></div>
+    </div>
+    <div class="fmt-section-label">Reaching the public</div>
+    <div class="format-grid">
+      <div class="fmt-card" data-fmt="oped" onclick="selectFmt(this)"><h4>Op-ed / editorial</h4><p>A persuasive essay for a newspaper, school publication, or website meant to shift public opinion.</p></div>
+      <div class="fmt-card" data-fmt="psa" onclick="selectFmt(this)"><h4>Public service announcement</h4><p>A short, sharp message — written, visual, or recorded — designed to raise awareness and prompt action.</p></div>
+      <div class="fmt-card" data-fmt="social-campaign" onclick="selectFmt(this)"><h4>Social media campaign plan</h4><p>A strategy for using social platforms to build awareness, shift opinion, or organize people around your issue.</p></div>
+      <div class="fmt-card" data-fmt="community-forum" onclick="selectFmt(this)"><h4>Community forum proposal</h4><p>A plan to host or organize a public meeting where community members discuss and respond to your issue.</p></div>
+    </div>
+    <div class="fmt-section-label">Presenting a plan directly</div>
+    <div class="format-grid">
+      <div class="fmt-card" data-fmt="proposal" onclick="selectFmt(this)"><h4>Policy proposal / memo</h4><p>A structured document laying out the problem, your recommended solution, how it works, and its costs and benefits.</p></div>
+      <div class="fmt-card" data-fmt="speech" onclick="selectFmt(this)"><h4>Speech or presentation</h4><p>A spoken argument delivered to a real or simulated audience — a board meeting, community event, or class.</p></div>
+      <div class="fmt-card" data-fmt="budget-proposal" onclick="selectFmt(this)"><h4>Budget or funding proposal</h4><p>A request for specific funding or resources, showing how money would be spent and what outcomes it would produce.</p></div>
+      <div class="fmt-card" data-fmt="resolution" onclick="selectFmt(this)"><h4>Resolution or ordinance draft</h4><p>An attempt to write the actual language of a law, rule, or official resolution the way a governing body would adopt it.</p></div>
+    </div>
+    <div style="height:1.25rem"></div>
+    <div class="q-stack">
+      <div class="fg"><label>Why does this format make sense for your audience and topic?</label><textarea id="fmt-why"></textarea></div>
+      <div class="fg"><label>What is the one thing you want your audience to do, think, or feel?</label><textarea id="fmt-goal"></textarea></div>
+    </div>
+    <div class="nav-row"><button onclick="goTab(2)">← Back</button><button class="bp" onclick="goTab(4)">Next: Review →</button></div>
+  </div>
+
+  <!-- TAB 5 -->
+  <div class="panel" id="panel-4">
+    <p class="step-title">Review &amp; export</p>
+    <p class="step-desc">Check everything below before you generate your PDF to turn in.</p>
+    <div class="checklist" id="checklist"></div>
+    <button class="export-btn" onclick="exportPDF()">Export PDF to turn in</button>
+    <p style="font-size:12px;color:#aaa;text-align:center;margin-top:8px">Opens a print dialog — choose "Save as PDF"</p>
+    <div class="nav-row"><button onclick="goTab(3)">← Back</button><div></div></div>
+  </div>
+</div>
+
+<script>
+let selectedAud='',selectedFmt='',solutionCount=0;
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>goTab(+t.dataset.tab)));
+function goTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.getElementById('prog').style.width=((n+1)/5*100)+'%';
+  if(n===4)buildChecklist();
+}
+const repLinks={
+  national:{label:'Find your U.S. representatives:',links:[
+    {text:'Find your U.S. Senator',url:'https://www.senate.gov/senators/senators-contact.htm'},
+    {text:'Find your U.S. Representative',url:'https://www.house.gov/representatives/find-your-representative'},
+    {text:'Contact the White House',url:'https://www.whitehouse.gov/contact/'},
+  ]},
+  state:{label:'Find your Michigan state representatives:',links:[
+    {text:'Michigan Senate',url:'https://www.senate.michigan.gov/fyswr/'},
+    {text:'Michigan House',url:'https://www.house.mi.gov/MHRPublic/fyr/fyrcapture.aspx'},
+    {text:'Governor Whitmer',url:'https://www.michigan.gov/whitmer/contact'},
+  ]},
+  school:{label:'Reach Dexter Community Schools:',links:[
+    {text:'Dexter School Board',url:'https://www.dexterschools.org/our-district/school-board'},
+    {text:'District contact',url:'https://www.dexterschools.org/contact-us'},
+  ]}
+};
+function selectAud(el){
+  document.querySelectorAll('.aud-card').forEach(a=>a.classList.remove('selected'));
+  el.classList.add('selected');selectedAud=el.dataset.aud;
+  const box=document.getElementById('rep-links'),row=document.getElementById('rep-link-row'),lbl=document.getElementById('rep-links-label'),data=repLinks[selectedAud];
+  if(data){lbl.textContent=data.label;row.innerHTML=data.links.map(l=>`<a href="${l.url}" target="_blank">${l.text} ↗</a>`).join('');box.classList.add('visible');}
+  else box.classList.remove('visible');
+}
+function selectFmt(el){document.querySelectorAll('.fmt-card').forEach(f=>f.classList.remove('selected'));el.classList.add('selected');selectedFmt=el.dataset.fmt;}
+function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function addSolution(){
+  solutionCount++;
+  const n=solutionCount,c=document.getElementById('solutions-container'),d=document.createElement('div');
+  d.className='solution-card';
+  d.innerHTML=`<div class="sc-num">Solution ${n}</div>
+    <div class="fg"><label>Name / one-sentence summary</label><input id="sol${n}-name" placeholder="e.g. Require free breakfast and lunch for all public school students" /></div>
+    <div class="fg" style="margin-top:8px"><label>How would it work? Who carries it out?</label><textarea id="sol${n}-how" style="min-height:60px"></textarea></div>
+    <div class="sc-grid">
+      <div class="fg"><label>Strengths</label><textarea id="sol${n}-pro" style="min-height:56px"></textarea></div>
+      <div class="fg"><label>Weaknesses</label><textarea id="sol${n}-con" style="min-height:56px"></textarea></div>
+    </div>`;
+  c.appendChild(d);
+}
+addSolution();addSolution();addSolution();
+function buildChecklist(){
+  const checks=[
+    {label:'Name and topic filled in',ok:!!(val('f-name')&&val('f-topic'))},
+    {label:'All six scaffolding questions answered',ok:['sc1','sc2','sc3','sc4','sc5','sc6'].every(id=>!!val(id))},
+    {label:'Overall research question written',ok:!!val('final-q')},
+    {label:'At least 3 solutions filled in',ok:(()=>{let c=0;for(let i=1;i<=solutionCount;i++)if(val('sol'+i+'-name'))c++;return c>=3;})()},
+    {label:'Audience identified',ok:!!(selectedAud&&val('aud-who'))},
+    {label:'Format chosen and justified',ok:!!(selectedFmt&&val('fmt-why'))},
+    {label:'Call to action written',ok:!!val('fmt-goal')},
+  ];
+  document.getElementById('checklist').innerHTML=checks.map(c=>`<div class="check-item ${c.ok?'ok':''}"><span class="icon">${c.ok?'✓':'○'}</span><span>${c.label}</span></div>`).join('');
+}
+function audLabel(a){return{national:'National / Federal',state:'State / Local',school:'School / Community'}[a]||a;}
+function fmtLabel(f){return{'letter-rep':'Letter to elected official','public-comment':'Public comment','letter-board':'Letter to school board','ops-proposal':'School operations proposal','lesson-proposal':'Unit or lesson proposal','student-petition':'Student petition','oped':'Op-ed / editorial','psa':'Public service announcement','social-campaign':'Social media campaign plan','community-forum':'Community forum proposal','proposal':'Policy proposal / memo','speech':'Speech or presentation','budget-proposal':'Budget or funding proposal','resolution':'Resolution or ordinance draft'}[f]||f;}
+function exportPDF(){
+  const name=val('f-name')||'___',topic=val('f-topic')||'___',fq=val('final-q')||'—';
+  const scaffolds=[
+    {label:'1. What is the core problem or issue?',id:'sc1'},{label:'2. Who is most affected?',id:'sc2'},
+    {label:'3. What level is this happening at?',id:'sc3'},{label:'4. What kind of change is needed?',id:'sc4'},
+    {label:'5. Who has the power to make that change?',id:'sc5'},{label:'6. What is the strongest argument against your view?',id:'sc6'},
+  ];
+  let scaffoldHtml=scaffolds.map(s=>`<div style="margin-bottom:8px"><div style="font-size:12px;color:#555;font-weight:600;margin-bottom:2px">${s.label}</div><div style="font-size:13px;background:#f5f5f5;border-radius:4px;padding:6px 10px;min-height:24px">${val(s.id)||'—'}</div></div>`).join('');
+  let solHtml='';
+  for(let i=1;i<=solutionCount;i++){
+    const n=val('sol'+i+'-name'),h=val('sol'+i+'-how'),p=val('sol'+i+'-pro'),c=val('sol'+i+'-con');
+    if(!n&&!h)continue;
+    solHtml+=`<div style="border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:12px;break-inside:avoid"><div style="font-weight:600;font-size:11px;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em">Solution ${i}</div><div style="margin-bottom:5px"><strong>Summary:</strong> ${n||'—'}</div><div style="margin-bottom:8px"><strong>How it works:</strong> ${h||'—'}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="background:#f0faf4;border-radius:6px;padding:8px"><strong style="color:#2d7a4f">Strengths</strong><br><span style="font-size:13px">${p||'—'}</span></div><div style="background:#fff3f2;border-radius:6px;padding:8px"><strong style="color:#a33030">Weaknesses</strong><br><span style="font-size:13px">${c||'—'}</span></div></div></div>`;
+  }
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Policy Research — ${name}</title><style>@page{margin:0.9in}*{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:13px;color:#222;line-height:1.6}h1{font-size:18px;font-weight:700;color:#1a3a6b;margin:0 0 2px}h2{font-size:14px;font-weight:700;color:#1a5fa8;margin:20px 0 6px;padding-bottom:4px;border-bottom:2px solid #1a5fa8}.meta{font-size:12px;color:#555;margin-bottom:16px}.final-q{background:#d6e8fb;border-radius:6px;padding:10px 14px;font-size:14px;font-weight:600;margin-top:12px}.fmt-badge{display:inline-block;background:#1a5fa8;color:#fff;border-radius:4px;padding:2px 10px;font-size:12px;font-weight:700;margin-bottom:8px}.info-row{margin-bottom:6px}</style></head><body>
+<h1>Policy research project — E9 / AH9</h1>
+<div class="meta"><strong>Name:</strong> ${name} &nbsp;&nbsp; <strong>Topic:</strong> ${topic}</div>
+<h2>Step 1 — Research question</h2>${scaffoldHtml}<div class="final-q">Overall research question: ${fq}</div>
+<h2>Step 2 — Potential solutions</h2>${solHtml||'<p>No solutions recorded.</p>'}
+<h2>Step 3 — Audience</h2><div style="background:#eef4fb;border-radius:6px;padding:10px 14px;margin-bottom:4px"><div class="info-row"><strong>Level:</strong> ${audLabel(selectedAud)||'—'}</div><div class="info-row"><strong>Specific audience:</strong> ${val('aud-who')||'—'}</div><div class="info-row"><strong>Why this audience:</strong> ${val('aud-why')||'—'}</div><div class="info-row"><strong>What they care about:</strong> ${val('aud-cares')||'—'}</div></div>
+<h2>Step 4 — Format</h2><div style="background:#eef4fb;border-radius:6px;padding:10px 14px"><div class="fmt-badge">${fmtLabel(selectedFmt)||'—'}</div><div class="info-row"><strong>Why this format:</strong> ${val('fmt-why')||'—'}</div><div class="info-row"><strong>What I want my audience to do/think/feel:</strong> ${val('fmt-goal')||'—'}</div></div>
+</body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),400);
+}
+</script>
+</body>
+</html>
